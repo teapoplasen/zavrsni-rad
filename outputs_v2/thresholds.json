@@ -1,0 +1,326 @@
+{
+    "AAPL": {
+        "Logistic Regression": 0.5,
+        "Random Forest": 0.5,
+        "XGBoost": 0.5,
+        "LSTM": 0.4900000000000001
+    },
+    "MSFT": {
+        "Logistic Regression": 0.4800000000000001,
+        "Random Forest": 0.4700000000000001,
+        "XGBoost": 0.44000000000000006,
+        "LSTM": 0.4700000000000001
+    },
+    "GOOGL": {
+        "Logistic Regression": 0.4600000000000001,
+        "Random Forest": 0.4900000000000001,
+        "XGBoost": 0.5000000000000001,
+        "LSTM": 0.4700000000000001
+    },
+    "AMZN": {
+        "Logistic Regression": 0.4600000000000001,
+        "Random Forest": 0.4900000000000001,
+        "XGBoost": 0.5000000000000001,
+        "LSTM": 0.5000000000000001
+    },
+    "META": {
+        "Logistic Regression": 0.45000000000000007,
+        "Random Forest": 0.43000000000000005,
+        "XGBoost": 0.4,
+        "LSTM": 0.4700000000000001
+    },
+    "NVDA": {
+        "Logistic Regression": 0.43000000000000005,
+        "Random Forest": 0.4600000000000001,
+        "XGBoost": 0.44000000000000006,
+        "LSTM": 0.42000000000000004
+    },
+    "AVGO": {
+        "Logistic Regression": 0.5000000000000001,
+        "Random Forest": 0.5000000000000001,
+        "XGBoost": 0.5000000000000001,
+        "LSTM": 0.4900000000000001
+    },
+    "CSCO": {
+        "Logistic Regression": 0.4900000000000001,
+        "Random Forest": 0.5100000000000001,
+        "XGBoost": 0.4700000000000001,
+        "LSTM": 0.4900000000000001
+    },
+    "ADBE": {
+        "Logistic Regression": 0.4900000000000001,
+        "Random Forest": 0.4900000000000001,
+        "XGBoost": 0.5200000000000001,
+        "LSTM": 0.4900000000000001
+    },
+    "CRM": {
+        "Logistic Regression": 0.4800000000000001,
+        "Random Forest": 0.4900000000000001,
+        "XGBoost": 0.5000000000000001,
+        "LSTM": 0.5000000000000001
+    },
+    "AMD": {
+        "Logistic Regression": 0.4700000000000001,
+        "Random Forest": 0.4800000000000001,
+        "XGBoost": 0.4800000000000001,
+        "LSTM": 0.4900000000000001
+    },
+    "QCOM": {
+        "Logistic Regression": 0.5000000000000001,
+        "Random Forest": 0.4900000000000001,
+        "XGBoost": 0.4700000000000001,
+        "LSTM": 0.5000000000000001
+    },
+    "INTC": {
+        "Logistic Regression": 0.38,
+        "Random Forest": 0.4900000000000001,
+        "XGBoost": 0.42000000000000004,
+        "LSTM": 0.4900000000000001
+    },
+    "TXN": {
+        "Logistic Regression": 0.5000000000000001,
+        "Random Forest": 0.5100000000000001,
+        "XGBoost": 0.5000000000000001,
+        "LSTM": 0.4900000000000001
+    },
+    "JPM": {
+        "Logistic Regression": 0.4900000000000001,
+        "Random Forest": 0.5000000000000001,
+        "XGBoost": 0.45000000000000007,
+        "LSTM": 0.5000000000000001
+    },
+    "BAC": {
+        "Logistic Regression": 0.5000000000000001,
+        "Random Forest": 0.5000000000000001,
+        "XGBoost": 0.45000000000000007,
+        "LSTM": 0.5000000000000001
+    },
+    "MS": {
+        "Logistic Regression": 0.5000000000000001,
+        "Random Forest": 0.5000000000000001,
+        "XGBoost": 0.5000000000000001,
+        "LSTM": 0.5000000000000001
+    },
+    "GS": {
+        "Logistic Regression": 0.4900000000000001,
+        "Random Forest": 0.4900000000000001,
+        "XGBoost": 0.4800000000000001,
+        "LSTM": 0.4900000000000001
+    },
+    "V": {
+        "Logistic Regression": 0.5100000000000001,
+        "Random Forest": 0.4800000000000001,
+        "XGBoost": 0.4700000000000001,
+        "LSTM": 0.5100000000000001
+    },
+    "MA": {
+        "Logistic Regression": 0.5200000000000001,
+        "Random Forest": 0.5000000000000001,
+        "XGBoost": 0.5000000000000001,
+        "LSTM": 0.5100000000000001
+    },
+    "AXP": {
+        "Logistic Regression": 0.5000000000000001,
+        "Random Forest": 0.4800000000000001,
+        "XGBoost": 0.4800000000000001,
+        "LSTM": 0.4900000000000001
+    },
+    "JNJ": {
+        "Logistic Regression": 0.5,
+        "Random Forest": 0.5,
+        "XGBoost": 0.5,
+        "LSTM": 0.5000000000000001
+    },
+    "LLY": {
+        "Logistic Regression": 0.5000000000000001,
+        "Random Forest": 0.4800000000000001,
+        "XGBoost": 0.45000000000000007,
+        "LSTM": 0.4800000000000001
+    },
+    "UNH": {
+        "Logistic Regression": 0.4900000000000001,
+        "Random Forest": 0.5300000000000001,
+        "XGBoost": 0.5200000000000001,
+        "LSTM": 0.5000000000000001
+    },
+    "ABBV": {
+        "Logistic Regression": 0.5200000000000001,
+        "Random Forest": 0.5200000000000001,
+        "XGBoost": 0.5500000000000002,
+        "LSTM": 0.5200000000000001
+    },
+    "MRK": {
+        "Logistic Regression": 0.5300000000000001,
+        "Random Forest": 0.5100000000000001,
+        "XGBoost": 0.5100000000000001,
+        "LSTM": 0.5000000000000001
+    },
+    "PFE": {
+        "Logistic Regression": 0.5300000000000001,
+        "Random Forest": 0.5100000000000001,
+        "XGBoost": 0.5000000000000001,
+        "LSTM": 0.5100000000000001
+    },
+    "TMO": {
+        "Logistic Regression": 0.4900000000000001,
+        "Random Forest": 0.5200000000000001,
+        "XGBoost": 0.5000000000000001,
+        "LSTM": 0.5000000000000001
+    },
+    "ABT": {
+        "Logistic Regression": 0.5100000000000001,
+        "Random Forest": 0.5100000000000001,
+        "XGBoost": 0.5100000000000001,
+        "LSTM": 0.5000000000000001
+    },
+    "CVS": {
+        "Logistic Regression": 0.5200000000000001,
+        "Random Forest": 0.5100000000000001,
+        "XGBoost": 0.4800000000000001,
+        "LSTM": 0.5200000000000001
+    },
+    "TSLA": {
+        "Logistic Regression": 0.5,
+        "Random Forest": 0.5,
+        "XGBoost": 0.5,
+        "LSTM": 0.4800000000000001
+    },
+    "HD": {
+        "Logistic Regression": 0.5200000000000001,
+        "Random Forest": 0.5000000000000001,
+        "XGBoost": 0.4900000000000001,
+        "LSTM": 0.5100000000000001
+    },
+    "MCD": {
+        "Logistic Regression": 0.5200000000000001,
+        "Random Forest": 0.5100000000000001,
+        "XGBoost": 0.4700000000000001,
+        "LSTM": 0.5000000000000001
+    },
+    "NKE": {
+        "Logistic Regression": 0.5100000000000001,
+        "Random Forest": 0.5000000000000001,
+        "XGBoost": 0.4900000000000001,
+        "LSTM": 0.5000000000000001
+    },
+    "SBUX": {
+        "Logistic Regression": 0.4800000000000001,
+        "Random Forest": 0.5200000000000001,
+        "XGBoost": 0.5100000000000001,
+        "LSTM": 0.4800000000000001
+    },
+    "WMT": {
+        "Logistic Regression": 0.5000000000000001,
+        "Random Forest": 0.5000000000000001,
+        "XGBoost": 0.5100000000000001,
+        "LSTM": 0.5000000000000001
+    },
+    "PG": {
+        "Logistic Regression": 0.4800000000000001,
+        "Random Forest": 0.5200000000000001,
+        "XGBoost": 0.5400000000000001,
+        "LSTM": 0.5000000000000001
+    },
+    "KO": {
+        "Logistic Regression": 0.5100000000000001,
+        "Random Forest": 0.5300000000000001,
+        "XGBoost": 0.5000000000000001,
+        "LSTM": 0.5200000000000001
+    },
+    "PEP": {
+        "Logistic Regression": 0.4700000000000001,
+        "Random Forest": 0.5400000000000001,
+        "XGBoost": 0.5900000000000002,
+        "LSTM": 0.5200000000000001
+    },
+    "EL": {
+        "Logistic Regression": 0.5600000000000002,
+        "Random Forest": 0.5400000000000001,
+        "XGBoost": 0.4800000000000001,
+        "LSTM": 0.5100000000000001
+    },
+    "XOM": {
+        "Logistic Regression": 0.5,
+        "Random Forest": 0.5,
+        "XGBoost": 0.5,
+        "LSTM": 0.5100000000000001
+    },
+    "CVX": {
+        "Logistic Regression": 0.5100000000000001,
+        "Random Forest": 0.5000000000000001,
+        "XGBoost": 0.5100000000000001,
+        "LSTM": 0.4900000000000001
+    },
+    "CAT": {
+        "Logistic Regression": 0.4900000000000001,
+        "Random Forest": 0.4800000000000001,
+        "XGBoost": 0.4800000000000001,
+        "LSTM": 0.4900000000000001
+    },
+    "GE": {
+        "Logistic Regression": 0.5000000000000001,
+        "Random Forest": 0.5000000000000001,
+        "XGBoost": 0.4800000000000001,
+        "LSTM": 0.4800000000000001
+    },
+    "HON": {
+        "Logistic Regression": 0.5100000000000001,
+        "Random Forest": 0.5100000000000001,
+        "XGBoost": 0.5300000000000001,
+        "LSTM": 0.4900000000000001
+    },
+    "UNP": {
+        "Logistic Regression": 0.5200000000000001,
+        "Random Forest": 0.4900000000000001,
+        "XGBoost": 0.4900000000000001,
+        "LSTM": 0.4800000000000001
+    },
+    "UPS": {
+        "Logistic Regression": 0.5100000000000001,
+        "Random Forest": 0.5100000000000001,
+        "XGBoost": 0.4900000000000001,
+        "LSTM": 0.5100000000000001
+    },
+    "NFLX": {
+        "Logistic Regression": 0.4900000000000001,
+        "Random Forest": 0.4800000000000001,
+        "XGBoost": 0.4600000000000001,
+        "LSTM": 0.5100000000000001
+    },
+    "DIS": {
+        "Logistic Regression": 0.4900000000000001,
+        "Random Forest": 0.5200000000000001,
+        "XGBoost": 0.4900000000000001,
+        "LSTM": 0.5000000000000001
+    },
+    "T": {
+        "Logistic Regression": 0.5000000000000001,
+        "Random Forest": 0.5200000000000001,
+        "XGBoost": 0.5100000000000001,
+        "LSTM": 0.5200000000000001
+    },
+    "VZ": {
+        "Logistic Regression": 0.5000000000000001,
+        "Random Forest": 0.5100000000000001,
+        "XGBoost": 0.5300000000000001,
+        "LSTM": 0.5000000000000001
+    },
+    "NEE": {
+        "Logistic Regression": 0.5500000000000002,
+        "Random Forest": 0.5000000000000001,
+        "XGBoost": 0.4900000000000001,
+        "LSTM": 0.5300000000000001
+    },
+    "PLTR": {
+        "Logistic Regression": 0.4900000000000001,
+        "Random Forest": 0.4900000000000001,
+        "XGBoost": 0.4900000000000001,
+        "LSTM": 0.45000000000000007
+    },
+    "AMT": {
+        "Logistic Regression": 0.5100000000000001,
+        "Random Forest": 0.5100000000000001,
+        "XGBoost": 0.5200000000000001,
+        "LSTM": 0.5000000000000001
+    }
+}

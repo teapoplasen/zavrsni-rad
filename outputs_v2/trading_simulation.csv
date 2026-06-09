@@ -1,0 +1,55 @@
+Ticker,Model,Buy & Hold (%),Model (%),Razlika (pp)
+AAPL,Random Forest,37.55,14.88,-22.67
+MSFT,XGBoost,15.49,0.44,-15.05
+GOOGL,LSTM,33.77,30.15,-3.62
+AMZN,Logistic Regression,49.05,41.96,-7.1
+META,Random Forest,72.29,56.94,-15.35
+NVDA,LSTM,140.83,54.72,-86.1
+AVGO,LSTM,108.72,55.12,-53.6
+CSCO,LSTM,19.5,6.66,-12.84
+ADBE,Random Forest,-22.03,-18.29,3.74
+CRM,Logistic Regression,34.06,19.49,-14.57
+AMD,Logistic Regression,-9.52,-5.05,4.47
+QCOM,XGBoost,14.56,69.46,54.9
+INTC,Logistic Regression,-57.31,-23.35,33.96
+TXN,XGBoost,15.94,29.2,13.26
+JPM,XGBoost,43.02,12.03,-30.99
+BAC,XGBoost,34.29,25.92,-8.37
+MS,XGBoost,41.8,61.79,19.98
+GS,XGBoost,53.87,24.83,-29.03
+V,Logistic Regression,23.16,6.29,-16.87
+MA,Random Forest,26.22,13.36,-12.87
+AXP,Random Forest,61.49,55.64,-5.85
+JNJ,LSTM,-8.27,-7.16,1.11
+LLY,Random Forest,26.1,0.6,-25.5
+UNH,Logistic Regression,-4.85,-5.61,-0.76
+ABBV,LSTM,10.79,13.38,2.6
+MRK,LSTM,-14.75,-14.33,0.42
+PFE,XGBoost,-5.7,1.19,6.9
+TMO,Logistic Regression,-1.62,-7.35,-5.73
+ABT,LSTM,0.42,-0.38,-0.8
+CVS,XGBoost,-43.4,-33.66,9.74
+TSLA,XGBoost,75.05,33.34,-41.71
+HD,XGBoost,17.95,18.67,0.73
+MCD,XGBoost,0.76,-0.22,-0.97
+NKE,XGBoost,-27.02,-10.42,16.6
+SBUX,Logistic Regression,-0.31,1.39,1.7
+WMT,LSTM,68.44,12.69,-55.75
+PG,Logistic Regression,15.83,0.35,-15.49
+KO,Logistic Regression,6.61,-8.08,-14.69
+PEP,Logistic Regression,-9.47,-5.53,3.94
+EL,XGBoost,-45.31,-44.28,1.02
+XOM,Random Forest,5.96,-5.15,-11.11
+CVX,LSTM,5.23,9.66,4.43
+CAT,LSTM,30.84,4.91,-25.92
+GE,LSTM,64.93,10.09,-54.84
+HON,Logistic Regression,13.16,4.8,-8.36
+UNP,LSTM,-2.17,-1.75,0.42
+UPS,XGBoost,-16.62,-23.33,-6.71
+NFLX,XGBoost,91.47,18.32,-73.16
+DIS,Logistic Regression,21.99,-2.54,-24.53
+T,XGBoost,39.35,14.92,-24.43
+VZ,Logistic Regression,7.86,-1.54,-9.4
+NEE,Random Forest,19.13,18.4,-0.73
+PLTR,LSTM,370.61,161.96,-208.65
+AMT,Logistic Regression,-12.39,-4.99,7.41

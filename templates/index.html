@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sustav za Klasifikaciju Kretanja Cijena Dionica</title>
+    
+    <!-- Google Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <!-- Chart.js (100% Besplatan i Open-Source) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        :root {
+            --bg-dark: #08090f;
+            --bg-panel: #111320;
+            --bg-card: #171b2d;
+            --bg-input: #1a1e34;
+            --text-main: #d1d4dc;
+            --text-bright: #ffffff;
+            --text-muted: #787b86;
+            --border-color: #242942;
+            --color-up: #089981;
+            --color-up-bg: rgba(8, 153, 129, 0.1);
+            --color-down: #f23645;
+            --color-down-bg: rgba(242, 54, 69, 0.1);
+            --accent: #2962ff;
+            --accent-bg: rgba(41, 98, 255, 0.1);
+            --font-main: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* Ticker Traka */
+        .market-ticker {
+            background-color: var(--bg-panel);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            padding: 12px 20px;
+            overflow-x: auto;
+            white-space: nowrap;
+            scrollbar-width: none;
+            gap: 30px;
+        }
+        .market-ticker::-webkit-scrollbar { display: none; }
+        
+        .ticker-item {
+            display: flex;
+            flex-direction: column;
+            font-size: 0.85rem;
+        }
+        .ticker-name { font-weight: 600; color: var(--text-bright); }
+        .ticker-vals { display: flex; gap: 8px; align-items: center; margin-top: 2px;}
+        .val-up { color: var(--color-up); font-weight: 600;}
+        .val-down { color: var(--color-down); font-weight: 600;}
+
+        /* Header */
+        .header {
+            padding: 20px 30px;
+            background-color: var(--bg-panel);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--text-bright);
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .header h1 span {
+            color: var(--accent);
+            font-size: 1rem;
+            background: var(--accent-bg);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        .header-meta {
+            text-align: right;
+        }
+        .header-meta .name {
+            color: var(--text-bright);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        .header-meta .title {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            margin-top: 2px;
+        }
+
+        /* Layout Grid */
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            gap: 24px;
+            padding: 24px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* Sidebar Panels */
+        .panel {
+            background-color: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            height: fit-content;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+        
+        .panel-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-bright);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+            margin: 0;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .input-group label {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        
+        select {
+            width: 100%;
+            background-color: var(--bg-input);
+            color: var(--text-bright);
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            outline: none;
+            cursor: pointer;
+        }
+        select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px var(--accent-bg);
+        }
+        
+        optgroup {
+            background-color: var(--bg-panel);
+            color: var(--text-muted);
+            font-style: normal;
+        }
+
+        .btn-run {
+            background-color: var(--accent);
+            color: var(--text-bright);
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            transition: 0.2s ease-in-out;
+            box-shadow: 0 4px 12px rgba(41, 98, 255, 0.3);
+        }
+        .btn-run:hover {
+            background-color: #1e53e5;
+            transform: translateY(-1px);
+        }
+        .btn-run:active {
+            transform: translateY(1px);
+        }
+
+        /* Prediction Result Box */
+        .result-box {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .res-label {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.8px;
+        }
+        .res-price {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-bright);
+            margin: 8px 0;
+        }
+        .pred-signal {
+            font-size: 1.3rem;
+            font-weight: 700;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+        .signal-up {
+            background-color: var(--color-up-bg);
+            color: var(--color-up);
+            border: 1px solid rgba(8, 153, 129, 0.2);
+        }
+        .signal-down {
+            background-color: var(--color-down-bg);
+            color: var(--color-down);
+            border: 1px solid rgba(242, 54, 69, 0.2);
+        }
+        .pred-prob {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 12px;
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+        }
+        .pred-prob span {
+            font-weight: 600;
+            color: var(--text-bright);
+        }
+
+        /* Tabs Navigation */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .tabs-header {
+            display: flex;
+            background-color: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            padding: 6px;
+            border-radius: 10px;
+            gap: 5px;
+            width: fit-content;
+        }
+        
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .tab-btn:hover {
+            color: var(--text-bright);
+        }
+        .tab-btn.active {
+            background-color: var(--bg-input);
+            color: var(--text-bright);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .tab-content {
+            background-color: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            min-height: 550px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+        
+        .tab-pane {
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+        .tab-pane.active {
+            display: block;
+        }
+
+        /* Chart Kontejner */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .chart-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-bright);
+            margin: 0;
+        }
+
+        /* Performance Tab Pane */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .metric-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .metric-card-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .metric-card-value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text-bright);
+        }
+        .metric-progress {
+            height: 4px;
+            background-color: var(--bg-input);
+            border-radius: 2px;
+            overflow: hidden;
+            width: 100%;
+            margin-top: 4px;
+        }
+        .metric-progress-bar {
+            height: 100%;
+            background-color: var(--accent);
+            border-radius: 2px;
+            width: 0;
+            transition: width 0.8s cubic-bezier(0.1, 0.8, 0.2, 1);
+        }
+
+        .performance-table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+        
+        th {
+            background-color: var(--bg-card);
+            color: var(--text-bright);
+            font-weight: 600;
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-main);
+        }
+        
+        tr:last-child td {
+            border-bottom: none;
+        }
+        tr:hover td {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+        
+        .best-model-badge {
+            background-color: var(--color-up-bg);
+            color: var(--color-up);
+            border: 1px solid rgba(8, 153, 129, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* Theory terms explanation cards */
+        .theory-section {
+            margin-top: 30px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 24px;
+        }
+        .theory-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-bright);
+            margin-bottom: 15px;
+        }
+        .theory-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        @media (max-width: 768px) {
+            .theory-grid { grid-template-columns: 1fr; }
+        }
+        .theory-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+        }
+        .theory-card-name {
+            font-weight: 600;
+            color: var(--text-bright);
+            font-size: 0.85rem;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .theory-card-text {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+            margin: 0;
+        }
+
+        /* Trading Simulation Tab Pane */
+        .sim-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        @media (max-width: 1024px) {
+            .sim-grid { grid-template-columns: 1fr; }
+        }
+        
+        .sim-stats-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .sim-stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+        }
+        .sim-stat-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        
+        .sim-stat-label {
+            font-size: 0.9rem;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .sim-stat-val {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-bright);
+        }
+        
+        .sim-badge-up {
+            color: var(--color-up);
+            background: var(--color-up-bg);
+            border: 1px solid rgba(8, 153, 129, 0.2);
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+        .sim-badge-down {
+            color: var(--color-down);
+            background: var(--color-down-bg);
+            border: 1px solid rgba(242, 54, 69, 0.2);
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+
+        /* Spinner & Loading */
+        .loader {
+            border: 3px solid rgba(255, 255, 255, 0.05);
+            border-top: 3px solid var(--accent);
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto;
+            display: none;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Gornja Market Overview Traka -->
+    <div class="market-ticker" id="marketOverview">
+        <span style="color: var(--text-muted); align-self: center; font-size: 0.8rem;">Dohvaćanje stanja na tržištima...</span>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <h1><i class="bi bi-graph-up-arrow text-accent"></i> FinKlas <span>v2.0 - 54 Dionice</span></h1>
+        <div class="header-meta">
+            <div class="name">Tea Poplašen (0036559296)</div>
+            <div class="title">Završni rad - Klasifikacija kretanja cijena dionica</div>
+        </div>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="dashboard-container">
+        
+        <!-- Lijeva upravljačka ploča (Sidebar) -->
+        <div class="panel">
+            <div class="panel-title"><i class="bi bi-sliders2"></i> Kontrolna ploča</div>
+            
+            <!-- Dionica -->
+            <div class="input-group">
+                <label for="tickerSelect">Financijski instrument</label>
+                <select id="tickerSelect">
+                    <option value="" disabled selected>Učitavanje instrumenata...</option>
+                </select>
+            </div>
+
+            <!-- Model -->
+            <div class="input-group">
+                <label for="modelSelect">Algoritam strojnog učenja</label>
+                <select id="modelSelect">
+                    <option value="XGBoost">XGBoost (Extreme Gradient Boosting)</option>
+                    <option value="LSTM">LSTM (Long Short-Term Memory)</option>
+                    <option value="Random Forest">Random Forest Classifier</option>
+                    <option value="Logistic Regression">Logistička regresija (Skalirana)</option>
+                </select>
+            </div>
+
+            <!-- Gumb za pokretanje -->
+            <button id="btnRun" class="btn-run"><i class="bi bi-cpu"></i> IZVRŠI PREDIKCIJU</button>
+            <div id="loader" class="loader"></div>
+
+            <!-- Rezultati predikcije -->
+            <div class="result-box" id="resultBox">
+                <div class="res-label">Zadnja cijena zatvaranja</div>
+                <div class="res-price" id="resPrice">$0.00</div>
+                <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 16px 0;">
+                
+                <div class="res-label" style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>AI Predikcija (T+1)</span>
+                    <span id="resModelName" style="background: var(--accent); padding: 3px 8px; border-radius: 4px; color: white; font-size: 0.7rem; font-weight: 600;"></span>
+                </div>
+                
+                <div id="predSignal" class="pred-signal">--</div>
+                <div id="predProb" class="pred-prob"><i class="bi bi-shield-check"></i> Vjerojatnost: <span id="probVal">0.00%</span></div>
+            </div>
+        </div>
+
+        <!-- Desni dio s grafikonima i metrikama (Tabs) -->
+        <div class="main-content">
+            
+            <!-- Tab gumbi -->
+            <div class="tabs-header">
+                <button class="tab-btn active" onclick="switchTab(event, 'tabChart')"><i class="bi bi-graph-up"></i> Interaktivni grafikon</button>
+                <button class="tab-btn" onclick="switchTab(event, 'tabPerformance')"><i class="bi bi-bar-chart-line"></i> Performanse modela</button>
+                <button class="tab-btn" onclick="switchTab(event, 'tabSimulation')"><i class="bi bi-currency-dollar"></i> Simulacija trgovanja</button>
+            </div>
+
+            <!-- Tab Sadržaj -->
+            <div class="tab-content">
+                
+                <!-- TAB 1: Grafikon -->
+                <div id="tabChart" class="tab-pane active">
+                    <div class="chart-header">
+                        <h3 class="chart-title" id="chartLabel">AAPL - Povijesne cijene dionice</h3>
+                        <span style="font-size: 0.8rem; color: var(--text-muted);"><i class="bi bi-clock"></i> Prikaz: 6 Mjeseci (Dnevni interval)</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="stockChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- TAB 2: Performanse modela -->
+                <div id="tabPerformance" class="tab-pane">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Analiza performansi modela na validation skupu</h3>
+                    </div>
+                    
+                    <!-- Brzi pregled najboljeg modela za trenutno dionicu -->
+                    <div class="metrics-grid" id="metricsGrid">
+                        <!-- Popunjava se dinamički -->
+                    </div>
+
+                    <!-- Usporedna tablica modela -->
+                    <div class="performance-table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Model</th>
+                                    <th>Točnost (Accuracy)</th>
+                                    <th>Preciznost (Precision)</th>
+                                    <th>Odziv (Recall)</th>
+                                    <th>F1 Mjera (F1-Score)</th>
+                                    <th>ROC-AUC</th>
+                                </tr>
+                            </thead>
+                            <tbody id="performanceTableBody">
+                                <!-- Popunjava se dinamički preko JS -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pojašnjenje pojmova za rad -->
+                    <div class="theory-section">
+                        <h4 class="theory-title"><i class="bi bi-info-circle text-accent"></i> Objašnjenje evaluacijskih metrika</h4>
+                        <div class="theory-grid">
+                            <div class="theory-card">
+                                <div class="theory-card-name"><i class="bi bi-bullseye"></i> Točnost (Accuracy)</div>
+                                <p class="theory-card-text">Udio točno klasificiranih dana (i rast i pad) u odnosu na ukupan broj dana. Pokazuje opću ispravnost predviđanja modela, ali može biti varljiva ako su klase neuravnotežene.</p>
+                            </div>
+                            <div class="theory-card">
+                                <div class="theory-card-name"><i class="bi bi-zoom-in"></i> Preciznost (Precision)</div>
+                                <p class="theory-card-text">Omjer točno predviđenih rasta cijena (True Positives) i svih predviđenih rasta (True Positives + False Positives). Ključna metrika za investitore koji žele minimizirati lažne signale za kupnju.</p>
+                            </div>
+                            <div class="theory-card">
+                                <div class="theory-card-name"><i class="bi bi-arrow-bar-right"></i> Odziv (Recall)</div>
+                                <p class="theory-card-text">Omjer točno predviđenih rasta cijena (True Positives) i stvarnih rasta na tržištu (True Positives + False Negatives). Pokazuje sposobnost modela da prepozna što veći broj prilika za dobitak.</p>
+                            </div>
+                            <div class="theory-card">
+                                <div class="theory-card-name"><i class="bi bi-calculator"></i> F1 Mjera (F1-Score)</div>
+                                <p class="theory-card-text">Harmonijska sredina preciznosti i odziva. Pruža uravnoteženu procjenu performansi modela, pogotovo kada postoji kompromis između preciznosti (izbjegavanje pogrešaka) i odziva (hvatanje prilika).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 3: Simulacija trgovanja -->
+                <div id="tabSimulation" class="tab-pane">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Strategija aktivnog trgovanja vs. Buy & Hold (Test set 2024)</h3>
+                    </div>
+                    
+                    <div class="sim-grid">
+                        <!-- Stats card -->
+                        <div class="sim-stats-card">
+                            <div class="sim-stat-row">
+                                <div class="sim-stat-label"><i class="bi bi-graph-up-arrow text-accent"></i> Kumulativni povrat aktivnog modela</div>
+                                <div class="sim-stat-val sim-badge-up" id="simModelReturn">0.00%</div>
+                            </div>
+                            <div class="sim-stat-row">
+                                <div class="sim-stat-label"><i class="bi bi-hand-thumbs-up"></i> Buy & Hold strategija (Pasivna)</div>
+                                <div class="sim-stat-val" id="simBHReturn" style="color: var(--text-main);">0.00%</div>
+                            </div>
+                            <div class="sim-stat-row" style="border-top: 1px dashed var(--border-color); padding-top: 16px; margin-top: 10px;">
+                                <div class="sim-stat-label" style="font-weight: 600;"><i class="bi bi-trophy text-warning"></i> Alfa modela (Nadmašivanje)</div>
+                                <div class="sim-stat-val" id="simOutperformance" style="font-size: 1.4rem;">0.00 pp</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Pojašnjenje trading simulacije -->
+                        <div class="sim-stats-card" style="justify-content: center;">
+                            <h4 style="margin: 0 0 10px 0; color: var(--text-bright); font-size: 1rem;"><i class="bi bi-cash-coin text-success"></i> Opis simulacije</h4>
+                            <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
+                                Simulacija aktivnog trgovanja provodi se na testnom skupu (cijelu 2024. godinu). Strategija radi na sljedeći način: ako odabrani model za sutrašnji dan predviđa <strong>RAST (1)</strong>, ulazi se u dugu poziciju (kupi). Ako se predviđa <strong>PAD (0)</strong>, kapital ostaje izvan tržišta (ili se zatvara pozicija). 
+                                <br><br>
+                                Rezultati pokazuju jesu li signali generirani pomoću algoritama strojnog učenja u praksi sposobni nadmašiti jednostavnu pasivnu strategiju kupnje i držanja (Buy & Hold). Transakcijski troškovi i porezi radi jednostavnosti su izuzeti, što je standardni studentski akademski pristup.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // 1. DOHVAĆANJE POPISA DIONICA I POPUNJAVANJE DROPDOWNA
+        fetch('/api/tickers')
+            .then(res => res.json())
+            .then(sectors => {
+                const select = document.getElementById('tickerSelect');
+                select.innerHTML = ''; // Brišemo placeholder
+                
+                for (const [sectorName, stocks] of Object.entries(sectors)) {
+                    const optgroup = document.createElement('optgroup');
+                    optgroup.label = sectorName;
+                    
+                    stocks.forEach(stock => {
+                        const opt = document.createElement('option');
+                        opt.value = stock.ticker;
+                        opt.textContent = stock.naziv;
+                        optgroup.appendChild(opt);
+                    });
+                    
+                    select.appendChild(optgroup);
+                }
+                
+                // Zadana dionica
+                select.value = 'AAPL';
+                initDashboard('AAPL');
+            })
+            .catch(err => {
+                console.error("Greška pri učitavanju dionica:", err);
+                alert("Greška pri učitavanju popisa dionica.");
+            });
+
+        // 2. POPUNJAVANJE MARKET OVERVIEW TRAKE NA VRHU
+        fetch('/api/market_overview')
+            .then(res => res.json())
+            .then(data => {
+                const tickerDiv = document.getElementById('marketOverview');
+                tickerDiv.innerHTML = '';
+                data.forEach(item => {
+                    const colorClass = item.change >= 0 ? 'val-up' : 'val-down';
+                    const sign = item.change >= 0 ? '+' : '';
+                    const arrow = item.change >= 0 ? '▲' : '▼';
+                    tickerDiv.innerHTML += `
+                        <div class="ticker-item">
+                            <span class="ticker-name">${item.name}</span>
+                            <div class="ticker-vals">
+                                <span>${item.price.toLocaleString('hr-HR', {minimumFractionDigits: 2})}</span>
+                                <span class="${colorClass}">${arrow} ${sign}${item.change.toFixed(2)}%</span>
+                            </div>
+                        </div>
+                    `;
+                });
+            })
+            .catch(err => console.warn("Nemoguće učitati market overview:", err));
+
+        // 3. INICIJALIZACIJA CHART.JS GRAFIKONA
+        let stockChart = null;
+
+        function drawChart(ticker) {
+            document.getElementById('chartLabel').innerText = `${ticker} - Povijesna kretanja cijene (Zadnjih 6 mjeseci)`;
+            fetch(`/api/chart/${ticker}`)
+                .then(res => res.json())
+                .then(data => {
+                    const labels = data.map(item => item.time);
+                    const prices = data.map(item => item.close);
+                    
+                    if (stockChart) {
+                        stockChart.destroy();
+                    }
+                    
+                    const ctx = document.getElementById('stockChart').getContext('2d');
+                    
+                    // Gradient za ispunu ispod linije
+                    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+                    gradient.addColorStop(0, 'rgba(41, 98, 255, 0.35)');
+                    gradient.addColorStop(1, 'rgba(41, 98, 255, 0.0)');
+                    
+                    stockChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Cijena zatvaranja ($)',
+                                data: prices,
+                                borderColor: '#2962ff',
+                                borderWidth: 2.5,
+                                pointRadius: 0,
+                                pointHoverRadius: 6,
+                                pointHoverBackgroundColor: '#ffffff',
+                                pointHoverBorderColor: '#2962ff',
+                                pointHoverBorderWidth: 3,
+                                fill: true,
+                                backgroundColor: gradient,
+                                tension: 0.1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    mode: 'index',
+                                    intersect: false,
+                                    backgroundColor: '#111320',
+                                    titleColor: '#ffffff',
+                                    bodyColor: '#d1d4dc',
+                                    borderColor: '#242942',
+                                    borderWidth: 1,
+                                    padding: 10,
+                                    displayColors: false,
+                                    callbacks: {
+                                        label: function(context) {
+                                            return `Cijena: $${context.parsed.y.toFixed(2)}`;
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    grid: { color: 'rgba(36, 41, 66, 0.3)', drawOnChartArea: true },
+                                    ticks: { color: '#787b86', maxTicksLimit: 8, font: { family: 'Inter' } }
+                                },
+                                y: {
+                                    grid: { color: 'rgba(36, 41, 66, 0.3)', drawOnChartArea: true },
+                                    ticks: { color: '#787b86', font: { family: 'Inter' }, callback: function(value) { return '$' + value; } }
+                                }
+                            }
+                        }
+                    });
+                })
+                .catch(err => console.error("Greška pri dohvaćanju podataka grafikona:", err));
+        }
+
+        // 4. LOGIKA ZA TABOVE
+        function switchTab(evt, tabId) {
+            const tabPanes = document.getElementsByClassName("tab-pane");
+            for (let i = 0; i < tabPanes.length; i++) {
+                tabPanes[i].classList.remove("active");
+            }
+            
+            const tabBtns = document.getElementsByClassName("tab-btn");
+            for (let i = 0; i < tabBtns.length; i++) {
+                tabBtns[i].classList.remove("active");
+            }
+            
+            document.getElementById(tabId).classList.add("active");
+            evt.currentTarget.classList.add("active");
+            
+            // Re-fit chart if chart tab becomes active
+            if (tabId === 'tabChart' && stockChart) {
+                stockChart.resize();
+            }
+        }
+
+        // 5. INICIJALIZACIJA CIJELOG DASHBOARDA ZA ODABRANU DIONICU
+        function initDashboard(ticker) {
+            drawChart(ticker);
+            updatePerformanceAndSimulation(ticker);
+            document.getElementById('resultBox').style.display = 'none'; // Sakrij rezultate prošle dionice
+        }
+
+        // Detektiranje promjene dionice u dropdownu
+        document.getElementById('tickerSelect').addEventListener('change', (e) => {
+            initDashboard(e.target.value);
+        });
+
+        // 6. POPUNJAVANJE METRIKA PERFORMANSI I TRADING SIMULACIJE
+        function updatePerformanceAndSimulation(ticker) {
+            // Učitavanje performansi modela
+            fetch(`/api/performance/${ticker}`)
+                .then(res => res.json())
+                .then(metrics => {
+                    const tableBody = document.getElementById('performanceTableBody');
+                    tableBody.innerHTML = '';
+                    
+                    const grid = document.getElementById('metricsGrid');
+                    grid.innerHTML = '';
+                    
+                    // Pronalazimo model s najvećom F1 mjerom
+                    let bestModel = metrics[0];
+                    metrics.forEach(m => {
+                        if (m.f1 > bestModel.f1) {
+                            bestModel = m;
+                        }
+                    });
+                    
+                    // Popunjavamo Grid s metrikama najboljeg modela
+                    const metricsToShow = [
+                        { name: 'Točnost (Accuracy)', val: bestModel.accuracy, label: 'Accuracy' },
+                        { name: 'Preciznost (Precision)', val: bestModel.precision, label: 'Precision' },
+                        { name: 'F1 Mjera (F1-Score)', val: bestModel.f1, label: 'F1' },
+                        { name: 'ROC-AUC', val: bestModel.auc, label: 'ROC-AUC' }
+                    ];
+                    
+                    grid.innerHTML = `
+                        <div class="metric-card" style="grid-column: 1 / -1; background-color: var(--accent-bg); border-color: rgba(41, 98, 255, 0.3);">
+                            <span class="metric-card-title" style="color: var(--accent); font-weight: bold;">Najbolji model za dionicu ${ticker}</span>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+                                <span style="font-size: 1.3rem; font-weight: bold; color: var(--text-bright);">${bestModel.model}</span>
+                                <span class="best-model-badge">NAJBOLJE PERFORMANSE</span>
+                            </div>
+                        </div>
+                    `;
+                    
+                    metricsToShow.forEach(m => {
+                        const widthPct = (m.val * 100).toFixed(1) + '%';
+                        grid.innerHTML += `
+                            <div class="metric-card">
+                                <span class="metric-card-title">${m.name}</span>
+                                <span class="metric-card-value">${(m.val * 100).toFixed(2)}%</span>
+                                <div class="metric-progress">
+                                    <div class="metric-progress-bar" id="bar-${m.label}" style="width: ${widthPct};"></div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    // Popunjavamo tablicu
+                    metrics.forEach(m => {
+                        const isBest = m.model === bestModel.model;
+                        tableBody.innerHTML += `
+                            <tr style="${isBest ? 'font-weight: 600; background-color: rgba(255, 255, 255, 0.01);' : ''}">
+                                <td style="color: var(--text-bright);">
+                                    ${m.model} 
+                                    ${isBest ? '<span class="best-model-badge" style="margin-left: 8px;">Najbolji</span>' : ''}
+                                </td>
+                                <td>${(m.accuracy * 100).toFixed(2)}%</td>
+                                <td>${(m.precision * 100).toFixed(2)}%</td>
+                                <td>${(m.recall * 100).toFixed(2)}%</td>
+                                <td>${(m.f1 * 100).toFixed(2)}%</td>
+                                <td>${m.auc.toFixed(4)}</td>
+                            </tr>
+                        `;
+                    });
+                })
+                .catch(err => {
+                    console.error("Greška pri dohvaćanju metrika performansi:", err);
+                });
+
+            // Učitavanje trading simulacije
+            fetch(`/api/simulation/${ticker}`)
+                .then(res => res.json())
+                .then(sim => {
+                    const mReturn = document.getElementById('simModelReturn');
+                    const bhReturn = document.getElementById('simBHReturn');
+                    const outperf = document.getElementById('simOutperformance');
+                    
+                    mReturn.innerText = `${sim.model_return.toFixed(2)}%`;
+                    mReturn.className = sim.model_return >= 0 ? 'sim-stat-val sim-badge-up' : 'sim-stat-val sim-badge-down';
+                    
+                    bhReturn.innerText = `${sim.buy_hold_return.toFixed(2)}%`;
+                    bhReturn.style.color = sim.buy_hold_return >= 0 ? 'var(--color-up)' : 'var(--color-down)';
+                    
+                    const diff = sim.outperformance;
+                    outperf.innerText = `${diff >= 0 ? '+' : ''}${diff.toFixed(2)} pp`;
+                    outperf.style.color = diff >= 0 ? 'var(--color-up)' : 'var(--color-down)';
+                })
+                .catch(err => {
+                    console.error("Greška pri dohvaćanju trading simulacije:", err);
+                });
+        }
+
+        // 7. POKRETANJE ML PREDIKCIJE
+        document.getElementById('btnRun').addEventListener('click', () => {
+            const ticker = document.getElementById('tickerSelect').value;
+            const modelName = document.getElementById('modelSelect').value;
+            
+            const btn = document.getElementById('btnRun');
+            const loader = document.getElementById('loader');
+            const resultBox = document.getElementById('resultBox');
+            
+            btn.style.display = 'none';
+            loader.style.display = 'block';
+            resultBox.style.display = 'none';
+
+            fetch(`/api/predict/${ticker}/${modelName}`)
+                .then(res => res.json())
+                .then(data => {
+                    loader.style.display = 'none';
+                    btn.style.display = 'flex';
+
+                    if (data.error) {
+                        alert("Greška na poslužitelju: " + data.error);
+                        return;
+                    }
+
+                    // Prikaz rezultata predikcije
+                    resultBox.style.display = 'block';
+                    document.getElementById('resPrice').innerText = `$${data.CijenaDanas.toLocaleString('hr-HR', {minimumFractionDigits: 2})}`;
+                    document.getElementById('resModelName').innerText = data.OdabraniModel;
+                    
+                    const signalDiv = document.getElementById('predSignal');
+                    if (data.Predikcija === 'RAST') {
+                        signalDiv.className = 'pred-signal signal-up';
+                        signalDiv.innerHTML = '<i class="bi bi-arrow-up-circle-fill"></i> KUPITI (LONG)';
+                    } else {
+                        signalDiv.className = 'pred-signal signal-down';
+                        signalDiv.innerHTML = '<i class="bi bi-arrow-down-circle-fill"></i> PRODATI (SHORT)';
+                    }
+                    
+                    document.getElementById('probVal').innerText = `${data.Vjerojatnost.toFixed(2)}%`;
+                })
+                .catch(err => {
+                    loader.style.display = 'none';
+                    btn.style.display = 'flex';
+                    alert("Greška u povezivanju na poslužitelj.");
+                });
+        });
+    </script>
+</body>
+</html>
