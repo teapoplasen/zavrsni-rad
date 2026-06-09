@@ -324,7 +324,8 @@ def predict_live(ticker, model_name):
             # Skaliranje i dimenzioniranje za LSTM (batch_size, timesteps, features)
             # LSTM model očekuje sekvencu od 10 koraka (1, 10, 25)
             X_live_scaled = scaler.transform(X_live)
-            X_live_lstm = X_live_scaled.reshape((1, 10, X_live_scaled.shape[1]))
+            X_live_scaled_np = np.array(X_live_scaled)
+            X_live_lstm = X_live_scaled_np.reshape((1, 10, X_live_scaled_np.shape[1]))
             
             proba = float(model.predict(X_live_lstm, verbose=0)[0, 0])
             
