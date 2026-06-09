@@ -14,6 +14,19 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 app = Flask(__name__)
 OUTPUT_DIR = Path('outputs_v2')
 
+# Globalni cache za učitane modele i skalere radi bržeg rada i uštede memorije na poslužitelju
+MODEL_CACHE = {}
+
+def load_cached_object(path, loader_func):
+    path_str = str(path)
+    if path_str not in MODEL_CACHE:
+        # Ograničavamo cache kako bismo spriječili preveliku potrošnju RAM-a
+        if len(MODEL_CACHE) >= 40:
+            stari_kljuc = next(iter(MODEL_CACHE))
+            del MODEL_CACHE[stari_kljuc]
+        MODEL_CACHE[path_str] = loader_func(path)
+    return MODEL_CACHE[path_str]
+
 def izracunaj_live_znacajke(ticker):
     # Dohvati podatke (potrebno nam je barem 100 dana za pouzdano računanje 50-dnevnih pomičnih prosjeka i 10-dnevnog LSTM prozora)
     df = yf.download(ticker, period='100d', interval='1d', progress=False)
@@ -279,8 +292,8 @@ def predict_live(ticker, model_name):
             if not model_path.exists() or not scaler_path.exists():
                 return jsonify({"error": f"LSTM Model ili skaler za {ticker} ne postoji."}), 404
                 
-            model = tf.keras.models.load_model(model_path)
-            scaler = joblib.load(scaler_path)
+            model = load_cached_object(model_path, tf.keras.models.load_model)
+            scaler = load_cached_object(scaler_path, joblib.load)
             
             # Skaliranje i dimenzioniranje za LSTM (batch_size, timesteps, features)
             # LSTM model očekuje sekvencu od 10 koraka (1, 10, 25)
@@ -295,7 +308,7 @@ def predict_live(ticker, model_name):
             if not model_path.exists():
                 return jsonify({"error": f"Model {model_name} za {ticker} nije pronađen."}), 404
                 
-            model = joblib.load(model_path)
+            model = load_cached_object(model_path, joblib.load)
             
             # Za klasične modele koristimo samo zadnji red (posljednji trgovački dan)
             X_live_last = X_live.iloc[[-1]]
@@ -305,7 +318,7 @@ def predict_live(ticker, model_name):
                 scaler_path = OUTPUT_DIR / f'{ticker}_scaler.joblib'
                 if not scaler_path.exists():
                     return jsonify({"error": f"Skaler za {ticker} nije pronađen."}), 404
-                scaler = joblib.load(scaler_path)
+                scaler = load_cached_object(scaler_path, joblib.load)
                 X_live_in = scaler.transform(X_live_last)
             else:
                 X_live_in = X_live_last.values
