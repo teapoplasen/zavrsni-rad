@@ -7,6 +7,32 @@ from pathlib import Path
 import tensorflow as tf
 import os
 import json
+import sys
+
+# Definiranje i registriranje ManualStandardScaler klase radi uspješne deserializacije pod Gunicornom
+class ManualStandardScaler:
+    def __init__(self):
+        self.mean_ = None
+        self.scale_ = None
+        
+    def fit(self, X):
+        self.mean_ = np.mean(X, axis=0)
+        self.scale_ = np.std(X, axis=0)
+        if isinstance(self.scale_, pd.Series):
+            self.scale_[self.scale_ == 0] = 1.0
+        else:
+            self.scale_[self.scale_ == 0] = 1.0
+        return self
+        
+    def transform(self, X):
+        return (X - self.mean_) / self.scale_
+        
+    def fit_transform(self, X):
+        return self.fit(X).transform(X)
+
+import __main__
+__main__.ManualStandardScaler = ManualStandardScaler
+sys.modules['__main__'].ManualStandardScaler = ManualStandardScaler
 
 # Smanjivanje tensorflow logova
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
