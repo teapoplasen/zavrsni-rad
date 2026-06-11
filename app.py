@@ -140,14 +140,17 @@ def market_overview():
     results = []
     for name, t in tickers.items():
         try:
-            df = yf.download(t, period='2d', interval='1d', progress=False)
+            df = yf.download(t, period='5d', interval='1d', progress=False)
+            if isinstance(df.columns, pd.MultiIndex):
+                df.columns = df.columns.get_level_values(0)
+            df = df.dropna(subset=['Close'])
             if len(df) >= 2:
-                close_today = float(df['Close'].iloc[-1].item())
-                close_yest = float(df['Close'].iloc[-2].item())
+                close_today = float(df['Close'].iloc[-1])
+                close_yest = float(df['Close'].iloc[-2])
                 pct_change = ((close_today - close_yest) / close_yest) * 100
                 results.append({"name": name, "price": round(close_today, 2), "change": round(pct_change, 2)})
-        except:
-            pass
+        except Exception as e:
+            print(f"Error loading {name}: {e}")
     return jsonify(results)
 
 # API za TradingView Chart
