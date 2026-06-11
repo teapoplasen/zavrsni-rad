@@ -1,6 +1,6 @@
-# FinKlas - Platforma za Analizu i Predikciju Kretanja Cijena Dionica
+# FinPredict - Platforma za Analizu i Predikciju Kretanja Cijena Dionica
 
-FinKlas je napredna, produkcijski spremna web platforma i sustav strojnog učenja razvijen za klasifikaciju i predikciju smjera kretanja cijena dionica (rast ili pad) za sljedeći trgovački dan (T+1). Projekt je razvijen kao cjelovito rješenje koje povezuje akademska istraživanja u području financijskih vremenskih serija s praktičnim, interaktivnim web sučeljem za vizualizaciju rezultata.
+FinPredict je napredna, produkcijski spremna web platforma i sustav strojnog učenja razvijen za klasifikaciju i predikciju smjera kretanja cijena dionica (rast ili pad) za sljedeći trgovački dan (T+1). Projekt je razvijen kao cjelovito rješenje koje povezuje akademska istraživanja u području financijskih vremenskih serija s praktičnim, interaktivnim web sučeljem za vizualizaciju rezultata.
 
 Sustav obuhvaća obradu povijesnih financijskih podataka za **54 dionice iz 6 različitih sektora**, treniranje i evaluaciju četiri napredna algoritma strojnog učenja te integraciju rezultata kroz klijent-poslužiteljsku web aplikaciju.
 
