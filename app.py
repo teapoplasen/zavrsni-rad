@@ -157,7 +157,9 @@ def market_overview():
 @app.route('/api/chart/<ticker>')
 def get_chart_data(ticker):
     df = yf.download(ticker, period='6mo', interval='1d', progress=False)
-    if isinstance(df.columns, pd.MultiIndex): df.columns = df.columns.get_level_values(0)
+    if isinstance(df.columns, pd.MultiIndex):
+        df.columns = df.columns.get_level_values(0)
+    df = df.dropna(subset=['Close', 'Open', 'High', 'Low'])
     
     chart_data = []
     for index, row in df.iterrows():
