@@ -35,5 +35,16 @@ env/
 .vscode/
 .idea/
 
-# Local configuration
 .env
+
+# Word lock files
+~$*.docx
+~$*.doc
+
+# Reference PDFs and raw templates
+*vucelic_eugen_fer_2025_predd_sveuc.pdf*
+*zavrsni_rad (1).pdf*
+*zavrsni_rad_section_test.docx*
+*zavrsni_rad_table_test.docx*
+*zavrsni_rad_upute.txt*
+

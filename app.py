@@ -355,13 +355,30 @@ def predict_live(ticker, model_name):
         # Klasifikacija na temelju optimalnog praga
         pred = "RAST" if proba >= threshold else "PAD"
         
+        # Ekstrakcija pokazatelja za UI
+        last_row = X_live.iloc[-1]
+        rsi_val = float(last_row['rsi_14'])
+        macd_diff_val = float(last_row['macd_diff'])
+        bb_pos_val = float(last_row['bb_position'])
+        vix_val = float(last_row['vix_close'])
+        daily_change = float(last_row['return_1d']) * 100
+        
+        # Provjera NaN vrijednosti
+        def clean_val(val, default):
+            return default if np.isnan(val) or np.isinf(val) else val
+            
         return jsonify({
             "Ticker": ticker,
             "CijenaDanas": danas_cijena,
             "Predikcija": pred,
             "Vjerojatnost": round(proba * 100, 2),
             "OdabraniModel": model_name,
-            "OptimalniPrag": round(threshold * 100, 2)
+            "OptimalniPrag": round(threshold * 100, 2),
+            "IndicatorRSI": round(clean_val(rsi_val, 50.0), 2),
+            "IndicatorMACD": round(clean_val(macd_diff_val, 0.0), 4),
+            "IndicatorBB": round(clean_val(bb_pos_val, 0.5) * 100, 2),
+            "IndicatorVIX": round(clean_val(vix_val, 15.0), 2),
+            "DailyChangePct": round(clean_val(daily_change, 0.0), 2)
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
