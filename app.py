@@ -55,9 +55,9 @@ def load_cached_object(path, loader_func):
 
 def izracunaj_live_znacajke(ticker):
     # Dohvati podatke (potrebno nam je barem 100 dana za pouzdano računanje 50-dnevnih pomičnih prosjeka i 10-dnevnog LSTM prozora)
-    df = yf.download(ticker, period='100d', interval='1d', progress=False)
-    sp500 = yf.download('^GSPC', period='100d', interval='1d', progress=False)
-    vix = yf.download('^VIX', period='100d', interval='1d', progress=False)
+    df = yf.download(ticker, period='100d', interval='1d', progress=False, auto_adjust=True)
+    sp500 = yf.download('^GSPC', period='100d', interval='1d', progress=False, auto_adjust=True)
+    vix = yf.download('^VIX', period='100d', interval='1d', progress=False, auto_adjust=True)
     
     if isinstance(df.columns, pd.MultiIndex): df.columns = df.columns.get_level_values(0)
     if isinstance(sp500.columns, pd.MultiIndex): sp500.columns = sp500.columns.get_level_values(0)

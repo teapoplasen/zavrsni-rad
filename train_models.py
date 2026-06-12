@@ -21,6 +21,30 @@ from tensorflow.keras.layers import LSTM, Dense, Dropout
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.regularizers import l2
 
+class ManualStandardScaler:
+    """
+    Ručna implementacija standardizacije podataka za demonstraciju razumijevanja algoritma.
+    """
+    def __init__(self):
+        self.mean_ = None
+        self.scale_ = None
+        
+    def fit(self, X):
+        self.mean_ = np.mean(X, axis=0)
+        self.scale_ = np.std(X, axis=0)
+        if isinstance(self.scale_, pd.Series):
+            self.scale_[self.scale_ == 0] = 1.0
+        else:
+            self.scale_[self.scale_ == 0] = 1.0
+        return self
+        
+    def transform(self, X):
+        return (X - self.mean_) / self.scale_
+        
+    def fit_transform(self, X):
+        return self.fit(X).transform(X)
+
+
 # Postavljanje sjemena za ponovljivost
 SEED = 42
 np.random.seed(SEED)
@@ -111,7 +135,7 @@ def create_sequences(X, y, lookback=10):
 def optimize_threshold(y_true, y_proba):
     best_thresh = 0.50
     best_macro = 0.0
-    for thresh in np.arange(0.35, 0.65, 0.01):
+    for thresh in np.arange(0.35, 0.66, 0.01):
         preds = (y_proba >= thresh).astype(int)
         macro = manual_macro_f1_score(y_true, preds)
         if macro > best_macro:
@@ -121,8 +145,8 @@ def optimize_threshold(y_true, y_proba):
 
 # Preuzimanje makroekonomskih indikatora
 print("Preuzimanje makroekonomskih indikatora (S&P 500 i VIX)...")
-sp500 = yf.download('^GSPC', start=START_DATE, end=END_DATE, interval='1d', progress=False)
-vix = yf.download('^VIX', start=START_DATE, end=END_DATE, interval='1d', progress=False)
+sp500 = yf.download('^GSPC', start=START_DATE, end=END_DATE, interval='1d', progress=False, auto_adjust=True)
+vix = yf.download('^VIX', start=START_DATE, end=END_DATE, interval='1d', progress=False, auto_adjust=True)
 
 if isinstance(sp500.columns, pd.MultiIndex): sp500.columns = sp500.columns.get_level_values(0)
 if isinstance(vix.columns, pd.MultiIndex): vix.columns = vix.columns.get_level_values(0)
@@ -216,10 +240,25 @@ def chronological_split(df, train_end='2022-12-31', val_end='2023-12-31'):
     X = df[FEATURE_COLUMNS]
     y = df['target']
     X_train, y_train = X.loc[:train_end], y.loc[:train_end]
-    X_val   = X.loc[train_end:val_end].iloc[1:]
-    y_val   = y.loc[train_end:val_end].iloc[1:]
-    X_test  = X.loc[val_end:].iloc[1:]
-    y_test  = y.loc[val_end:].iloc[1:]
+    
+    X_val_raw = X.loc[train_end:val_end]
+    y_val_raw = y.loc[train_end:val_end]
+    if train_end in X_val_raw.index:
+        X_val = X_val_raw.iloc[1:]
+        y_val = y_val_raw.iloc[1:]
+    else:
+        X_val = X_val_raw
+        y_val = y_val_raw
+        
+    X_test_raw = X.loc[val_end:]
+    y_test_raw = y.loc[val_end:]
+    if val_end in X_test_raw.index:
+        X_test = X_test_raw.iloc[1:]
+        y_test = y_test_raw.iloc[1:]
+    else:
+        X_test = X_test_raw
+        y_test = y_test_raw
+        
     return X_train, y_train, X_val, y_val, X_test, y_test
 
 # Liste za spremanje metrika
@@ -235,7 +274,7 @@ for idx, ticker in enumerate(TICKERS, 1):
     print(f"[{idx}/{total_tickers}] Obrada dionice {ticker}...")
     try:
         # 1. Učitavanje i obrada podataka
-        df_raw = yf.download(ticker, start=START_DATE, end=END_DATE, interval='1d', progress=False)
+        df_raw = yf.download(ticker, start=START_DATE, end=END_DATE, interval='1d', progress=False, auto_adjust=True)
         if len(df_raw) < 100:
             print(f"  Nedovoljno podataka za {ticker}, preskačem.")
             continue
@@ -255,7 +294,7 @@ for idx, ticker in enumerate(TICKERS, 1):
         class_weight_dict = {0: float(w0), 1: float(w1)}
         
         # 3. Skaliranje (StandardScaler) i spremanje skalera
-        scaler = StandardScaler()
+        scaler = ManualStandardScaler()
         X_train_scaled = scaler.fit_transform(X_train)
         X_val_scaled = scaler.transform(X_val)
         X_test_scaled = scaler.transform(X_test)
@@ -359,16 +398,15 @@ for idx, ticker in enumerate(TICKERS, 1):
                 'Recall': rec,
                 'F1': f1,
                 'ROC-AUC': auc,
-                'CV F1 (mean)': f1 * 0.98,
                 'Best params': f"Threshold: {thresh:.2f}"
             })
             
-        # Odabir najboljeg modela na temelju optimiziranog F1 rezultata na validaciji
+        # Odabir najboljeg modela na temelju optimiziranog Macro F1 rezultata na validaciji
         val_f1s = {
-            'Logistic Regression': manual_f1_score(y_val, y_val_pred_lr),
-            'Random Forest': manual_f1_score(y_val, y_val_pred_rf),
-            'XGBoost': manual_f1_score(y_val, y_val_pred_xgb),
-            'LSTM': manual_f1_score(y_val_lstm, y_val_pred_lstm)
+            'Logistic Regression': manual_macro_f1_score(y_val, y_val_pred_lr),
+            'Random Forest': manual_macro_f1_score(y_val, y_val_pred_rf),
+            'XGBoost': manual_macro_f1_score(y_val, y_val_pred_xgb),
+            'LSTM': manual_macro_f1_score(y_val_lstm, y_val_pred_lstm)
         }
         best_model_name = max(val_f1s, key=val_f1s.get)
         best_thresh = ticker_thresholds[ticker][best_model_name]

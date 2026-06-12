@@ -129,7 +129,7 @@
         "Logistic Regression": 0.5,
         "Random Forest": 0.5,
         "XGBoost": 0.5,
-        "LSTM": 0.5000000000000001
+        "LSTM": 0.5100000000000001
     },
     "LLY": {
         "Logistic Regression": 0.5000000000000001,
@@ -183,7 +183,7 @@
         "Logistic Regression": 0.5,
         "Random Forest": 0.5,
         "XGBoost": 0.5,
-        "LSTM": 0.4800000000000001
+        "LSTM": 0.5000000000000001
     },
     "HD": {
         "Logistic Regression": 0.5200000000000001,
@@ -243,7 +243,7 @@
         "Logistic Regression": 0.5,
         "Random Forest": 0.5,
         "XGBoost": 0.5,
-        "LSTM": 0.5100000000000001
+        "LSTM": 0.5000000000000001
     },
     "CVX": {
         "Logistic Regression": 0.5100000000000001,
