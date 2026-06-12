@@ -401,12 +401,12 @@ for idx, ticker in enumerate(TICKERS, 1):
                 'Best params': f"Threshold: {thresh:.2f}"
             })
             
-        # Odabir najboljeg modela na temelju optimiziranog Macro F1 rezultata na validaciji
+        # Odabir najboljeg modela na temelju optimiziranog F1 rezultata na validaciji
         val_f1s = {
-            'Logistic Regression': manual_macro_f1_score(y_val, y_val_pred_lr),
-            'Random Forest': manual_macro_f1_score(y_val, y_val_pred_rf),
-            'XGBoost': manual_macro_f1_score(y_val, y_val_pred_xgb),
-            'LSTM': manual_macro_f1_score(y_val_lstm, y_val_pred_lstm)
+            'Logistic Regression': manual_f1_score(y_val, y_val_pred_lr),
+            'Random Forest': manual_f1_score(y_val, y_val_pred_rf),
+            'XGBoost': manual_f1_score(y_val, y_val_pred_xgb),
+            'LSTM': manual_f1_score(y_val_lstm, y_val_pred_lstm)
         }
         best_model_name = max(val_f1s, key=val_f1s.get)
         best_thresh = ticker_thresholds[ticker][best_model_name]
